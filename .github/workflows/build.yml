@@ -20,6 +20,8 @@ jobs:
       with:
         node-version: '16'
         cache: 'npm'
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@onyedikachi-david'
     
     - name: Install dependencies
       run: npm ci
@@ -39,6 +41,50 @@ jobs:
         name: chrome-extension
         path: social-media-guardian.zip
 
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '16'
+        registry-url: 'https://npm.pkg.github.com'
+        scope: '@onyedikachi-david'
+    
+    - name: Download artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: chrome-extension
+    
+    - name: Prepare package
+      run: |
+        echo "Creating package.json for GitHub Package"
+        cat > package.json << EOF
+        {
+          "name": "@onyedikachi-david/social-time-guardian",
+          "version": "\${GITHUB_REF#refs/tags/v}",
+          "description": "Browser extension to manage social media time usage",
+          "repository": "git://github.com/onyedikachi-david/social-time-guardian.git",
+          "files": ["social-media-guardian.zip"],
+          "publishConfig": {
+            "registry": "https://npm.pkg.github.com"
+          }
+        }
+        EOF
+    
+    - name: Publish package
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: \${{ secrets.GITHUB_TOKEN }}
+
   release:
     needs: build
     if: startsWith(github.ref, 'refs/tags/')
@@ -57,4 +103,4 @@ jobs:
         prerelease: false
         generate_release_notes: true
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+        GITHUB_TOKEN: \${{ secrets.GITHUB_TOKEN }} 
