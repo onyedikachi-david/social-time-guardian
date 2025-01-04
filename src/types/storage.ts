@@ -20,6 +20,27 @@ export interface UserSettings {
   theme: 'light' | 'dark';
 }
 
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  unlockedAt?: string;
+  icon: string;
+}
+
+export interface Streak {
+  currentStreak: number;
+  longestStreak: number;
+  lastMaintained: string;
+}
+
+export interface GameStats {
+  points: number;
+  level: number;
+  achievements: Achievement[];
+  streaks: { [site: string]: Streak };
+}
+
 export interface StorageData {
   settings: UserSettings;
   timeTracking: TimeTracking[];
@@ -30,4 +51,5 @@ export interface StorageData {
       expiresAt: string;
     };
   };
+  gameStats: GameStats;
 } 

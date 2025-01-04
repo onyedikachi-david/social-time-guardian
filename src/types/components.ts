@@ -17,6 +17,24 @@ export interface ComponentProps {
         threshold: number;
       };
     };
+    gameStats?: {
+      points: number;
+      level: number;
+      achievements: Array<{
+        id: string;
+        name: string;
+        description: string;
+        unlockedAt?: string;
+        icon: string;
+      }>;
+      streaks: {
+        [site: string]: {
+          currentStreak: number;
+          longestStreak: number;
+          lastMaintained: string;
+        };
+      };
+    };
   } | null;
 }
 
