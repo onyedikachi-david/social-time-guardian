@@ -24,35 +24,20 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Build Chrome/Edge extension
+    - name: Build extension
       run: npm run build
     
-    - name: Package Chrome/Edge extension
+    - name: Package extension
       run: |
         cd dist
         zip -r ../social-media-guardian.zip .
         cd ..
     
-    - name: Build Firefox extension
-      run: npm run build:firefox
-    
-    - name: Package Firefox extension
-      run: |
-        cd dist
-        zip -r ../social-media-guardian-firefox.xpi .
-        cd ..
-    
-    - name: Upload Chrome/Edge artifact
+    - name: Upload artifact
       uses: actions/upload-artifact@v3
       with:
-        name: chrome-edge-extension
+        name: chrome-extension
         path: social-media-guardian.zip
-    
-    - name: Upload Firefox artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: firefox-extension
-        path: social-media-guardian-firefox.xpi
 
   release:
     needs: build
@@ -67,8 +52,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          chrome-edge-extension/social-media-guardian.zip
-          firefox-extension/social-media-guardian-firefox.xpi
+          chrome-extension/social-media-guardian.zip
         draft: false
         prerelease: false
         generate_release_notes: true
